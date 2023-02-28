@@ -1,4 +1,4 @@
-#!/bin/bash -eDEVSHELL
+#!/bin/bash -e
 
 ########################################
 # Data Gathering
