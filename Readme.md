@@ -1,5 +1,6 @@
 # Skripsi Aghniya Abdurrahman Mannan - 140810190025
 Judul : Implementasi Runtime Security Pada Kubernetes
+
 Rincian :
 
 Saya akan membuat kluster kubernetes pada google cloud platform (GCP) dengan memanfaatkan salah satu service mereka yaitu Google Kubernetes Engine (GKE). Kemudian saya akan melakukan serangan privilege escalation dengan cara mencoba terhubung ke shell dari kluster kubernetes tersebut, kemudian mendapatkan privilege untuk membuat pod yang kemudian akan dimanfaatkan untuk membuat pod baru yaitu pod cryptominer. Setelah serangan tersebut, saya akan melihat efek yang ditimbulkan dari serangan tersebut. Setelah itu, saya akan melakukan remediasi dari serangan yang telah dilakukan.
