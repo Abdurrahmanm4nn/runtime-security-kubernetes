@@ -40,8 +40,8 @@ else
     if [ "${PERMISSION}" = "yes" ]; then
     	# execute attack and view result
     	echo "Creating new pod is allowed. Proceed to create bitcoinero pod."
-    	#./kubectl apply -f bitcoinero.yaml --validate=false
-    	#sleep 5
+    	./kubectl apply -f bitcoinero.yaml --validate=false
+    	sleep 5
     	./kubectl get pods
     else
     	echo "Creating new pod is not allowed. Bitcoinero pod creation failed."
