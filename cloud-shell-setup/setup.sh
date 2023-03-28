@@ -1,5 +1,3 @@
-#!/bin/bash -e
-
 ########################################
 # Data Gathering
 
@@ -25,17 +23,17 @@ echo
 
 gcloud container clusters create target-cluster --zone "us-west1-a" --no-enable-basic-auth --release-channel "stable" --machine-type "n1-standard-2" --preemptible --disk-type "pd-standard" --disk-size "20" --metadata disable-legacy-endpoints=true --scopes "https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append" --num-nodes "1" --enable-stackdriver-kubernetes --enable-ip-alias --default-max-pods-per-node "110" --addons HorizontalPodAutoscaling,HttpLoadBalancing --enable-autoupgrade --enable-autorepair --cluster-version=1.22 --image-type "COS" --tags=kube-target
 # let us access its NodePorts
-#gcloud compute firewall-rules create allow-vanity-ports --allow tcp:31300-31399 --target-tags=kube-target
+gcloud compute firewall-rules create allow-vanity-ports --allow tcp:31300-31399 --target-tags=kube-target
 
 # Fetch the first cluster location
-LOCATION="$(gcloud container clusters list --format='value(location)' | head -1 )"
+LOCATION="$(gcloud container clusters list --format='value(location)')"
 
 # Fetch a valid kubeconfig
 gcloud container clusters get-credentials --zone="${LOCATION}" target-cluster
 
 ########################################
 # Apply the k8s config
-kubectl apply -f omnibus.yml
+kubectl apply -f services.yml
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
