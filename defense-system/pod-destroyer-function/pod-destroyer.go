@@ -5,7 +5,7 @@ import (
   "context"
   "encoding/json"
   "fmt"
-  secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
+  secretmanagerpb "cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
   "io/ioutil"
   metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
   "k8s.io/client-go/kubernetes"
@@ -71,8 +71,8 @@ func init() {
   op = Operation{clientSet: cs}
 }
 
-// KillPwnedPod will be executed for each Falco event
-func KillPwnedPod(w http.ResponseWriter, r *http.Request) {
+// KillIlegalPod will be executed for each Falco event
+func KillIlegalPod(w http.ResponseWriter, r *http.Request) {
   body, err := ioutil.ReadAll(r.Body)
   if err != nil {
     http.Error(w, "cannot read body", http.StatusBadRequest)
