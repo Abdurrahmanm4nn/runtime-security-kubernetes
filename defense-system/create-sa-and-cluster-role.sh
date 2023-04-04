@@ -13,18 +13,21 @@ gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
 --member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
 --role="roles/cloudfunctions.invoker"
 
+gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
+--member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
+--role="roles/secretmanager.secretviewer"
+
+gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
+--member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
+--role="roles/secretmanager.secretAccessor"
+
 gcloud container clusters update target-cluster --region=us-west1-a --workload-pool="${GOOGLE_PROJECT_ID}.svc.id.goog"
 
 # enable workload identity for cluster and add iam.workloadIdentityUser role for the given Service Account.
 FALCO_NAMESPACE=falco
-gcloud iam service-accounts add-iam-policy-binding \
---role roles/iam.workloadIdentityUser \
---member "serviceAccount:${GOOGLE_PROJECT_ID}.svc.id.goog[${FALCO_NAMESPACE}/falco-falcosidekick]" \
-  ${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com
-
-# annotate falco-falcosidekick resource
-kubectl annotate serviceaccount --namespace $FALCO_NAMESPACE falco-falcosidekick \
-iam.gke.io/gcp-service-account=${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com
+gcloud iam service-accounts add-iam-policy-binding ${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com \
+--role="roles/iam.workloadIdentityUser" \
+--member="serviceAccount:${GOOGLE_PROJECT_ID}.svc.id.goog[${FALCO_NAMESPACE}/falco-falcosidekick]"
 
 # create role binding for service account
 kubectl create serviceaccount pod-destroyer
