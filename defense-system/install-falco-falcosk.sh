@@ -26,4 +26,4 @@ kubectl annotate serviceaccount --namespace $FALCO_NAMESPACE falco-falcosidekick
 iam.gke.io/gcp-service-account=${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com
 
 # check if falco running
-kubectl logs -n falco $(kubectl get pod -n falco -l app=falco -o=name) -f
+kubectl get pod -n falco
