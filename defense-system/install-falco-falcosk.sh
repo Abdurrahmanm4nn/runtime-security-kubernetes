@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export FALCO_NAMESPACE=falco
+SA_ACCOUNT=falco-falcosk-sa
 FUNCTION_NAME=KillIlegalPod
 
 # Get cloud function name
@@ -14,9 +15,10 @@ helm repo update
 kubectl create namespace $FALCO_NAMESPACE
 
 # install falco using helm
-helm upgrade --install falco falcosecurity/falco \
+helm install falco falcosecurity/falco \
 --namespace $FALCO_NAMESPACE \
 --set ebpf.enabled=true \
+--set driver.kind=ebpf \
 --set falcosidekick.enabled=true \
 --set falcosidekick.config.gcp.cloudfunctions.name=${CLOUD_FUNCTION_NAME} \
 --set falcosidekick.webui.enabled=true
