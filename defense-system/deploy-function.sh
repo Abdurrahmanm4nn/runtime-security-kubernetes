@@ -9,7 +9,7 @@ gcloud functions deploy $FUNCTION_NAME \
 --runtime go120 --trigger-http \
 --project $GOOGLE_PROJECT_ID \
 --service-account $SA_ACCOUNT@$GOOGLE_PROJECT_ID.iam.gserviceaccount.com \
---set-env-vars "SECRET_ENV_VAR=projects/${GOOGLE_PROJECT_ID}/secrets/pod-destroyer-secret/versions/1"
+--set-env-vars "SECRET_ENV_VAR=projects/${GOOGLE_PROJECT_ID}/secrets/pod-destroyer-secret/versions/latest"
 
 # check if function is created
 gcloud functions describe --format=json $FUNCTION_NAME | jq -r '.name'

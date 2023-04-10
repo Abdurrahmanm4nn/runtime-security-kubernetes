@@ -12,9 +12,6 @@ CLOUD_FUNCTION_NAME=$(gcloud functions describe --format=json $FUNCTION_NAME | j
 helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update
 
-# Create new namespace for falco
-kubectl create namespace $FALCO_NAMESPACE
-
 # install falco using helm
 helm install falco falcosecurity/falco \
 --namespace $FALCO_NAMESPACE \
@@ -30,3 +27,5 @@ iam.gke.io/gcp-service-account="${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gservicea
 
 # check if falco running
 kubectl get pod -n falco
+kubectl logs daemonset/falco -n falco
+kubectl logs deployment/falco-falcosidekick -n falco

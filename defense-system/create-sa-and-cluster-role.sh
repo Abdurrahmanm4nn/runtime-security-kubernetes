@@ -9,6 +9,10 @@ gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
 --member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
 --role="roles/cloudfunctions.developer"
 
+gcloud iam service-accounts add-iam-policy-binding $GOOGLE_PROJECT_ID@appspot.gserviceaccount.com \
+--member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
+--role="roles/iam.serviceAccountUser"
+
 gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
 --member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
 --role="roles/cloudfunctions.invoker"
@@ -23,8 +27,11 @@ gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
 
 gcloud container clusters update target-cluster --region=us-west1-a --workload-pool="${GOOGLE_PROJECT_ID}.svc.id.goog"
 
-# enable workload identity for cluster and add iam.workloadIdentityUser role for the given Service Account.
+# Create new namespace for falco
 FALCO_NAMESPACE=falco
+kubectl create namespace $FALCO_NAMESPACE
+
+# enable workload identity for cluster and add iam.workloadIdentityUser role for the given Service Account.
 gcloud iam service-accounts add-iam-policy-binding ${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com \
 --role="roles/iam.workloadIdentityUser" \
 --member="serviceAccount:${GOOGLE_PROJECT_ID}.svc.id.goog[${FALCO_NAMESPACE}/falco-falcosidekick]"
@@ -43,4 +50,6 @@ kubectl config view  --minify --flatten > kubeconfig_pod-destroyer.yaml
 
 # Set the token at the end of yaml
 cat << EOF >> kubeconfig_pod-destroyer.yaml
+- name: pod-destroyer
+  user:     
     token: $POD_DESTROYER_TOKEN
