@@ -87,13 +87,19 @@ func KillIlegalPod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = op.PodDestroy(event.OutputFields.K8SPodName, event.OutputFields.K8SNsName)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("cannot delete pod: %q", err), http.StatusInternalServerError)
+	if (len(event.OutputFields.K8SPodName) != 0 && len(event.OutputFields.K8SNsName) != 0) {
+		err = op.PodDestroy(event.OutputFields.K8SPodName, event.OutputFields.K8SNsName)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("cannot delete pod: %q", err), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}else {
+		w.WriteHeader(http.StatusContinue)
+		fmt.Println("Pod name or namespace is empty! Nothing will be removed!")
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 // PodDestroy destroys the given pod name in the given namespace
