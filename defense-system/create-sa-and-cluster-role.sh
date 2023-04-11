@@ -5,9 +5,10 @@ SA_ACCOUNT=falco-falcosk-sa
 gcloud iam service-accounts create $SA_ACCOUNT
 
 GOOGLE_PROJECT_ID=$(gcloud config get-value project)
+
 gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
 --member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
---role="roles/cloudfunctions.developer"
+--role="roles/cloudfunctions.invoker"
 
 gcloud iam service-accounts add-iam-policy-binding $GOOGLE_PROJECT_ID@appspot.gserviceaccount.com \
 --member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
@@ -15,26 +16,15 @@ gcloud iam service-accounts add-iam-policy-binding $GOOGLE_PROJECT_ID@appspot.gs
 
 gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
 --member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
---role="roles/cloudfunctions.invoker"
-
-gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
---member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
---role="roles/secretmanager.secretviewer"
+--role="roles/cloudfunctions.developer"
 
 gcloud projects add-iam-policy-binding $GOOGLE_PROJECT_ID \
 --member="serviceAccount:${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com" \
 --role="roles/secretmanager.secretAccessor"
 
+# modify cluster and node pool to use Workload Identity
 gcloud container clusters update target-cluster --region=us-west1-a --workload-pool="${GOOGLE_PROJECT_ID}.svc.id.goog"
-
-# Create new namespace for falco
-FALCO_NAMESPACE=falco
-kubectl create namespace $FALCO_NAMESPACE
-
-# enable workload identity for cluster and add iam.workloadIdentityUser role for the given Service Account.
-gcloud iam service-accounts add-iam-policy-binding ${SA_ACCOUNT}@${GOOGLE_PROJECT_ID}.iam.gserviceaccount.com \
---role="roles/iam.workloadIdentityUser" \
---member="serviceAccount:${GOOGLE_PROJECT_ID}.svc.id.goog[${FALCO_NAMESPACE}/falco-falcosidekick]"
+gcloud container node-pools update default-pool --cluster=target-cluster --region=us-west1-a --workload-metadata=GKE_METADATA
 
 # create role binding for service account
 kubectl create serviceaccount pod-destroyer
