@@ -39,7 +39,5 @@ POD_DESTROYER_TOKEN=$(kubectl get secrets $(kubectl get serviceaccounts pod-dest
 kubectl config view  --minify --flatten > kubeconfig_pod-destroyer.yaml
 
 # Set the token at the end of yaml
-cat << EOF >> kubeconfig_pod-destroyer.yaml
-- name: user.name
-  user:     
+cat << EOF >> kubeconfig_pod-destroyer.yaml     
     token: $POD_DESTROYER_TOKEN
