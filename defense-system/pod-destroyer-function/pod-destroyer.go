@@ -1,4 +1,5 @@
-package kill_ilegal_pod
+// package kill_ilegal_pod
+package main
 
 import (
 	"context"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	secretmanagerpb "cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -43,6 +45,7 @@ type Operation struct {
 func init() {
 	// The resource name of the SECRET_ENV_VAR in the format
 	// `projects/*/secrets/*/versions/*`
+	os.Setenv("SECRET_ENV_VAR", "projects/river-enquiry-374506/secrets/pod-destroyer-secret/versions/latest")
 	resource := os.Getenv("SECRET_ENV_VAR")
 	if len(resource) == 0 {
 		panic(fmt.Errorf("$SECRET_ENV_VAR env variable did not set"))
@@ -87,17 +90,21 @@ func KillIlegalPod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if (len(event.OutputFields.K8SPodName) != 0 && len(event.OutputFields.K8SNsName) != 0) {
+	fmt.Println("Pod name in request : %q", event.OutputFields.K8SPodName)
+	if (event.OutputFields.K8SPodName != "" && event.OutputFields.K8SNsName != "") {
 		err = op.PodDestroy(event.OutputFields.K8SPodName, event.OutputFields.K8SNsName)
+
 		if err != nil {
 			http.Error(w, fmt.Sprintf("cannot delete pod: %q", err), http.StatusInternalServerError)
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
-	}else {
-		w.WriteHeader(http.StatusContinue)
-		fmt.Println("Pod name or namespace is empty! Nothing will be removed!")
+		io.WriteString(w, fmt.Sprintf("Pod %q at namespace %v has been deleted", event.OutputFields.K8SPodName, event.OutputFields.K8SNsName))
+		return
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "Pod name or namespace is empty! Nothing will be removed!")
 		return
 	}
 }
