@@ -1,5 +1,4 @@
-// package kill_ilegal_pod
-package main
+package kill_ilegal_pod
 
 import (
 	"context"
