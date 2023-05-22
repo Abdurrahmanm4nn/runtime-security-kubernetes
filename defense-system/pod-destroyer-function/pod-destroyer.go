@@ -89,7 +89,7 @@ func KillIlegalPod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Pod name in request : %q", event.OutputFields.K8SPodName)
+	fmt.Println("Pod name in request : ", event.OutputFields.K8SPodName)
 	if (event.OutputFields.K8SPodName != "" && event.OutputFields.K8SNsName != "") {
 		err = op.PodDestroy(event.OutputFields.K8SPodName, event.OutputFields.K8SNsName)
 

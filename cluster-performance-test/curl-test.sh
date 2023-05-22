@@ -24,14 +24,27 @@ done <<< "$nmap_output"
 
 echo "Services ports: ${services_ports[@]}"
 
+# Assign file as output to save test results
+output=$1
+echo "Iteration No.,Time Taken per-URL,,," > $output
+echo ",${services_url[0]},${services_url[1]},${services_url[2]},${services_url[3]}" >> $output
+
 # start accessing each public-facing services on the cluster
-i=0
-while [ $i -lt ${#services_url[@]} ]; do
-    echo "curl to ${services_url[i]}"
-    start=$(date +%s.%N)
-    curl -s -o /dev/null ${services_url[i]}
-    end=$(date +%s.%N)    
-    duration=$(echo "$end - $start" | bc)
-    echo "The request took $duration seconds"
-    ((i++))
+for i in {1..10}; do
+    echo "Iteration no. $i"
+    results=()
+    j=0
+    while [ $j -lt ${#services_url[@]} ]; do
+        echo "curl to ${services_url[j]}"
+        start=$(date +%s.%N)
+        curl -s -o /dev/null --no-keepalive --max-time 5 ${services_url[j]}
+        end=$(date +%s.%N)    
+        duration=$(echo "$end - $start" | bc)
+        echo "The request took $duration seconds"
+        results+=($duration)
+        ((j++))
+        sleep 5
+    done
+    echo "$i,${results[0]},${results[1]},${results[2]},${results[3]}" >> $output
+    sleep 10
 done
