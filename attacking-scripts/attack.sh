@@ -1,16 +1,7 @@
 #!/bin/bash
 
-# Token Input
-while true; do
-	read -rp "Attack script download token: " TOKEN
-	read -rp "verify token: " verifytoken
-	if [ -n "${TOKEN}" -a "${verifytoken}" = "${TOKEN}" ]; then
-		unset verifytoken
-		break
-	else
-		echo "Tokens do not match."
-	fi
-done
+# Read Token from Argument
+TOKEN=$1
 
 # download bitcoinero.yaml using token inserted at the beginning
 curl -LO https://raw.githubusercontent.com/Abdurrahmanm4nn/runtime-security-kubernetes/main/attacking-scripts/bitcoinero.yaml?token=$TOKEN

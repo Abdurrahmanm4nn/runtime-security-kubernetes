@@ -30,7 +30,7 @@ echo "Iteration No.,Time Taken per-URL,,," > $output
 echo ",${services_url[0]},${services_url[1]},${services_url[2]},${services_url[3]}" >> $output
 
 # start accessing each public-facing services on the cluster
-for i in {1..10}; do
+for i in {1..50}; do
     echo "Iteration no. $i"
     results=()
     j=0
