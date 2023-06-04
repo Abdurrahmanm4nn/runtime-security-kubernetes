@@ -19,8 +19,8 @@ helm install falco falcosecurity/falco \
 --set ebpf.enabled=true \
 --set driver.kind=ebpf \
 --set falcosidekick.enabled=true \
---set falcosidekick.config.gcp.cloudfunctions.name="${CLOUD_FUNCTION_NAME}" \
---set falcosidekick.webui.enabled=true
+--set falcosidekick.webui.enabled=true \
+--set falcosidekick.config.gcp.cloudfunctions.name="${CLOUD_FUNCTION_NAME}"
 
 # enable workload identity for cluster and add iam.workloadIdentityUser role for the given Service Account.
 gcloud iam service-accounts add-iam-policy-binding $SA_ACCOUNT@$GOOGLE_PROJECT_ID.iam.gserviceaccount.com \
